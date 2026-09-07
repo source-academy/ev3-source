@@ -11,22 +11,24 @@ echo "robot ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/robot
 # stop sudo from doing a DNS lookup -- ensures executables can be run when network is down
 echo -e "Defaults\t!fqdn" >> /etc/sudoers
 
-# install sling.service, set permissions
-mv /usr/local/bin/sling.service /usr/local/bin/panel.service /etc/systemd/system/
-chmod 644 /etc/systemd/system/sling.service /etc/systemd/system/panel.service
-systemctl enable sling.service panel.service
+# install sling.service (Source) and sling-python.service (Python), set permissions
+mv /usr/local/bin/sling.service /usr/local/bin/sling-python.service /usr/local/bin/panel.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/sling.service /etc/systemd/system/sling-python.service /etc/systemd/system/panel.service
+systemctl enable sling.service sling-python.service panel.service
 
 # set permissions to our executables
 chmod 755 /usr/local/bin/uuidtob62
 chmod 755 /usr/local/bin/sling /usr/local/bin/sinter_host /usr/local/bin/start-sling.sh
+chmod 755 /usr/local/bin/pynter-ev3 /usr/local/bin/start-sling-python.sh
 
 # disable systemd-resolved
 systemctl disable systemd-resolved.service
 
-# add sling data directory
-mkdir -p /var/lib/sling
-chmod 755 /var/lib/sling
-chown robot:robot /var/lib/sling
+# add sling data directories - kept fully separate (own secret/device identity each) so Source's
+# existing pipeline is untouched by the Python one sitting alongside it
+mkdir -p /var/lib/sling /var/lib/sling-python
+chmod 755 /var/lib/sling /var/lib/sling-python
+chown robot:robot /var/lib/sling /var/lib/sling-python
 
 # install uuidgen
 cd /dev/shm

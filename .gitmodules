@@ -10,3 +10,6 @@
 [submodule "ev3dev-service-control"]
 	path = ev3dev-service-control
 	url = https://github.com/RichDom2185/ev3dev-service-control.git
+[submodule "pynter"]
+	path = pynter
+	url = https://github.com/source-academy/pynter.git
