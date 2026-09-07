@@ -3,7 +3,7 @@
 	url = https://github.com/source-academy/sling.git
 [submodule "go_ev3_qrcode_generator"]
 	path = go_ev3_qrcode_generator
-	url = https://github.com/RichDom2185/go_ev3_qrcode_generator
+	url = https://github.com/Akshay-2007-1/go_ev3_qrcode_generator.git
 [submodule "uuidtob62"]
 	path = uuidtob62
 	url = https://github.com/RichDom2185/uuidtob62.git

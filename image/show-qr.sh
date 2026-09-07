@@ -6,6 +6,7 @@ if [ "$(cat .enable)" == '0' ]; then
     echo "Not Authorized."
 else
     echo -en 'Content-Type: image/png\n\n'
-    cat /var/lib/sling/secret_image.png || echo ''
+    # Python (pynter-ev3) device identity - see show-secret.sh's comment
+    cat /var/lib/sling-python/secret_image.png || echo ''
     echo ''
 fi
