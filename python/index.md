@@ -1,3 +1,7 @@
+---
+title: EV3-Source Setup Guide (Python)
+---
+
 # EV3-Source Setup Guide (Python)
 
 Welcome to the world of LEGO Mindstorms EV3! This guide covers flashing the SD card, connecting your robot, and running Python on it.
@@ -27,20 +31,18 @@ We recommend [balenaEtcher](https://etcher.balena.io/) — it works cross-platfo
 
 Insert the flashed card and power on the EV3. It should boot to a home screen showing the battery voltage at the top-right. A fully charged battery reads around 8.3V; below 6V, expect it to run flat soon.
 
-Connect it to WiFi from the brickman menu: **Wireless and Networks → your network**.
+Connect it to WiFi from the brickman menu: **Wireless and Networks → your network**. Any network with internet access works — **the EV3 does not need to be on the same network as your computer.** Pairing and running code both go through Source Academy's own server as a relay, not a direct connection between your browser and the robot, so your laptop and the EV3 can be on completely different networks (say, your laptop on campus WiFi and the EV3 tethered to your phone) and everything still works.
 
-> **⚠️ If you're using a phone as a WiFi hotspot:** check that "AP isolation" / "Client isolation" is turned off in the hotspot's settings. Many phones enable this by default. It blocks devices connected to the same hotspot from reaching each other at all — including your laptop reaching the EV3 — even though both show as "connected" to the same network. There's no error message anywhere for this; the EV3 just never shows up, which is confusing without knowing to look here.
-
-> 🖼️ *Screenshot coming soon: the brickman home screen after boot, showing the battery indicator.*
+![The EV3's home screen after boot, showing its IP address, WiFi and battery status at the top](images/boot-screen.png)
 
 ## 3. Getting your device's pairing secret
 
 Every EV3 has a unique secret that identifies it to the Source Academy backend. Get it one of two ways:
 
-- **On the EV3's screen** — open the **Show QR Code** app from the brickman menu. It displays a QR code and the secret as text underneath.
-- **Over the network** — with the EV3 on the same network as your computer, visit `http://ev3dev.local/cgi-bin/qr.cgi` in a browser (or `index.cgi` for the secret as plain text).
+- **On the EV3's screen** (recommended — works no matter what network the EV3 is on) — open the **Show QR Code** app from the brickman menu (File Browser → `/home/robot` → **Show QR Code**, pictured below). It displays a QR code and the secret as text underneath.
+- **Over the network** — if your computer happens to be on the *same* network as the EV3, you can instead visit `http://ev3dev.local/cgi-bin/qr.cgi` in a browser (or `index.cgi` for the secret as plain text). This one specifically needs your computer to reach the EV3 directly, unlike everything else in this guide.
 
-> 🖼️ *Screenshot coming soon: the EV3's "Show QR Code" screen, showing an actual QR code and the secret text underneath.*
+![The brickman file browser with "Show QR Code" highlighted, ready to select](images/show-qr-code-menu.png)
 
 Keep this secret handy for the next step — you'll only need to do this once per robot.
 
@@ -50,11 +52,11 @@ Keep this secret handy for the next step — you'll only need to do this once pe
 2. Open the **Remote Execution** panel (the satellite icon among the side content tabs).
 3. Click **Add new device...**, paste in the secret from step 3, give it a name, and select device type **EV3**.
 
-> 🖼️ *Screenshot coming soon: the Remote Execution panel's "Add new device..." dialog, with the secret field visible.*
+![The "Add new device" dialog, with fields for Name, Type, and Secret](images/add-new-device.png)
 
 Once paired, the device appears in the panel. It may take a few seconds to show as **Connected** — that's your robot's persistent connection actually coming online, not a page-refresh issue.
 
-> 🖼️ *Screenshot coming soon: the Remote Execution panel showing the device with a green checkmark / "Connected" status.*
+![The Remote Execution panel showing "Connected to EV3 (EV3)" with a green checkmark](images/connected.png)
 
 You only need to pair a device once — it stays paired to your account. Next time, just power on the robot and select it from the same panel.
 
@@ -62,9 +64,11 @@ You only need to pair a device once — it stays paired to your account. Next ti
 
 Unlike older EV3-Source workflows, **you don't need to SSH in or manually transfer files to run a program.** Select **Python** as your language (top-right chapter selector), select your paired EV3 as the active device, write your code directly in the editor, and hit **Run**. Your code is compiled in the browser and shipped to the robot automatically.
 
-> 🖼️ *Screenshot coming soon: the Playground with Python selected as the language and the EV3 device selected/connected, for context.*
+![The Playground with Python §4 selected, connected to a real EV3, code and REPL both visible](images/playground-overview.png)
 
-SSH access to the robot still exists (**Enable SSH** / **Reset SSH Password** in the on-device **Source Academy Settings** app) but is only needed for advanced debugging — you will not need it for normal coursework.
+SSH access to the robot still exists (**Enable SSH** / **Reset SSH Password** in the on-device **Source Academy Settings** app) but is only needed for advanced debugging — you will not need it for normal coursework, and it's the *only* thing in this guide that requires your computer and the EV3 to be on the same network (since it's a direct connection, unlike pairing/running code, which both go through Source Academy's server).
+
+> **⚠️ If you do need SSH and you're using a phone as a WiFi hotspot:** check that "AP isolation" / "Client isolation" is turned off in the hotspot's settings. Many phones enable this by default, which blocks devices on the same hotspot from reaching each other directly — including your laptop reaching the EV3 over SSH — even though both show as "connected" to the same network. There's no error message for this; SSH just times out, which is confusing without knowing to look here. This has no effect on pairing or running code.
 
 > **⚠️ Known limitation — `print()` produces no output.** `print()` statements in code running on the physical EV3 currently do not appear anywhere in the browser. This is a known gap in the underlying interpreter, not something wrong with your code or setup. Until it's fixed, use `ev3_speak(str(value))` instead — it will say the value out loud:
 >
@@ -133,7 +137,8 @@ The full set of `ev3_*` functions works identically to [the Source-language EV3 
 
 | Symptom | Likely cause |
 |---|---|
-| The EV3 doesn't show up when pairing, even though it's connected to WiFi | AP isolation on your hotspot — see the note in [step 2](#2-booting-and-connecting-to-wifi) |
+| The EV3 doesn't show up when pairing, even though it's connected to WiFi | This shouldn't be a network-connectivity issue — pairing goes through Source Academy's server, not a direct connection. Double check the secret was copied correctly, and that the EV3's WiFi actually has internet access (not just a local network with no internet) |
+| I can't reach the EV3 over SSH, even though it's on the same hotspot as my computer | AP isolation on your hotspot — see the note in [step 5](#5-writing-and-running-python) |
 | `print()` shows nothing | Expected right now — see the note in [step 5](#5-writing-and-running-python), use `ev3_speak()` instead |
 | The robot moved for a split second and then stopped, even though nothing told it to stop | You likely need `ev3_pause()` between start and stop — see the [timing note](#a-simple-line-follower) under Examples |
 
