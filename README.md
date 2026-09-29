@@ -100,6 +100,26 @@ The interpreter uses this same fd to send `print()`/`display()` output back to `
 
 Production (`sourceacademy.nus.edu.sg`, backend `api.sourceacademy.nus.edu.sg`) and staging (`stg.sourceacademy.nus.edu.sg`, backend `api.stg.sourceacademy.nus.edu.sg`) are **entirely separate deployments** - separate device databases, separate AWS IoT brokers. Pairing a device's secret against one backend does nothing for the other; a device paired only on stg will never show as connected on prod, and vice versa. `image/start-sling.sh`/`image/start-sling-python.sh` accept a backend host as an argument for exactly this reason, and each backend now gets its own persistent service (`sling.service`/`sling-stg.service`, `sling-python.service`/`sling-python-stg.service`) so a device holds a genuinely live connection to both at once, regardless of which frontend a user happens to be testing from.
 
+### Device secrets: how they're generated, and how the connection is actually authenticated
+
+Each device generates its own secret independently, per pipeline, the first time that pipeline's service ever runs (see `image/start-sling.sh`/`image/start-sling-python.sh`):
+
+```bash
+uuidgen -r > secret          # a cryptographically random (v4) UUID
+uuidtob62 secret > secret_b62  # re-encoded as base62 - shorter, URL-safe, same entropy
+```
+
+Nothing about the secret is derived from the device's hardware, and it isn't shared between the two pipelines on the same physical EV3 - the Source secret and the Python secret are two independent random values, generated independently, the first time each pipeline's own service happens to run.
+
+**The secret itself is never an MQTT credential.** Its only job is as a one-time bootstrapping token against the backend's HTTP API:
+
+1. The device calls `GET /v2/devices/<secret>/mqtt_endpoint` and `/client_id` over HTTPS. The backend only answers if that secret has actually been **claimed** - i.e. a user registered it via the frontend's "Add new device" flow, which is the action that actually provisions a real device identity (an AWS IoT "Thing") behind the scenes. An unclaimed secret 404s on these endpoints (this is exactly what a device stuck in `sling(-python)?(-stg)?.service`'s restart loop looks like - see "Known repos and pending work" below for the bug this surfaced).
+2. Once claimed, the device also calls `/key` and `/cert`, which hand back a real **X.509 client certificate and private key** specific to that Thing.
+3. The actual MQTT connection to AWS IoT Core authenticates via **mutual TLS using that certificate** - not the secret string. AWS IoT validates the certificate against its own device registry, and that Thing's IoT policy scopes exactly which MQTT topics it may publish/subscribe to, so one device's certificate can't impersonate or snoop on another device's topics.
+4. The browser goes through the same claim step (it's the one doing the claiming) and receives its own separate, similarly-scoped connection credentials for the same device's topic namespace, letting it publish "run" commands and subscribe to that device's `display`/`status` output.
+
+So the secret's actual role is narrow and short-lived: it's what you type or scan once to prove "I own this physical device" to the backend, which then hands out real, properly-scoped TLS credentials for the actual data channel - the secret itself never touches AWS IoT directly. "Invalidate Bot Token" (in the on-device Source Academy Settings app) works by discarding that claim and generating a fresh random secret in its place - it does not touch or rotate the underlying certificate machinery, it just means the old secret (and whatever it was claimed as) no longer corresponds to anything.
+
 ### Known repos and pending work (accurate as of this PR)
 
 | Fix | Repo | PR |
