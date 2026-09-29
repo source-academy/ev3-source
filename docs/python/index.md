@@ -227,6 +227,7 @@ while True:
 * At any time, if you feel that the device secret has been compromised, you can invalidate and generate a new one using "Invalidate Bot Token" under [Source Academy Settings](#source-academy-settings). Afterwards, everyone will need to re-register their device on Source Academy using the new secret.
 * Multiple users can connect to the same device at the same time. If one user clicks "Run", all users will see the device run and the device's output.
 * You can use this feature with the collaborative editing feature so that all members of your Studio can work on the program together. You can also use it with the Google Drive integration to save different programs that you write.
+* On a freshly flashed card's very first boot, WiFi sometimes doesn't connect on its own even after you've selected your network. If this happens, try toggling WiFi off and back on (it's sometimes off by default) in the Wi-Fi menu entry, or removing and re-inserting the card and powering back on. This seems to only affect the very first boot of a fresh card - once it's connected once, subsequent boots connect normally.
 
 #### Troubleshooting
 
