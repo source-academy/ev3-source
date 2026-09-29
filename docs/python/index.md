@@ -63,7 +63,9 @@ When you press "Run" in the Source Academy, your Python program is compiled in t
 
 1. Power on the EV3 by pressing the center button and wait for the main menu to appear. The first time you do this, it may take longer.
 
-   **Note:** When powering it up for the first time, even after the main menu is shown, the EV3 is still configuring some settings, and will **restart automatically** after. Please make sure you don't interrupt this process by pressing any buttons on the menu. The whole process usually takes around 10 minutes — my advice is to just leave it alone, grab a cup of coffee and come back later.
+   > **This is expected, intentional behaviour — not a bug or a broken flash.** On the very first boot of a freshly flashed card, you will likely see the main menu appear, then **the screen goes back to boot logs and it restarts on its own**, with the status light **blinking orange** while this happens. It may cycle through this more than once before settling. This is the device automatically finishing first-time setup in the background (disabling SSH by default, generating a fresh random password, and a few other one-time steps) — it deliberately reboots itself once this is done, regardless of whether WiFi is connected yet.
+   >
+   > Do not press any buttons, remove the card, or power it off during this. It will stabilise on its own — a **solid green** light (not blinking) means it's actually settled and ready. The whole process usually takes around 10 minutes — leave it alone, grab a coffee, and come back later. This only ever happens once per card, the very first time it boots.
 
 1. Once the EV3 is fully booted up, you should see the following screen:
 
