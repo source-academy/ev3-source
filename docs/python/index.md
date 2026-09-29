@@ -145,21 +145,7 @@ Then, on the EV3 device:
 
 After 10 seconds, the QR code will automatically disappear. If you need more time, simply select "Show QR Code" again. After scanning the code on your computer/phone, click the add button. You have successfully linked the EV3 to your account!
 
-> #### Method 2: Accessing the EV3 from a browser
->
-> > Webserver is disabled by default. In order to do this, make sure you toggle "Enable Webserver" under [Source Academy Settings](#source-academy-settings) located on the EV3 file browser.
->
-> Using a phone or computer, open `http://<ev3's local IP>/` in your browser, where the IP address is shown on the top left-hand corner of the EV3's screen. You should get a page similar to below (the QR Code may or may not be shown):
->
-> ![](../images/panel.png)
->
-> Next, choose one of the following:
->
-> **Method 2a (fastest):** If you're already logged in to Source Academy, click the QR code at the page. This will automatically pop up a dialog for you to pair the device on Source Academy. Give the device a name and add it to your account using similar steps as above. If you are not logged in, we strongly recommend you to log in and use this method.
->
-> **Method 2b (adding manually):** Copy the device secret at the top of the page, then go to the Source Academy Playground and follow similar steps as above to add the device to your account, manually pasting in the secret.
->
-> **Method 2c (last resort):** Scan the QR code on the webpage using another device and the [abovementioned method](#method-1-scanning-a-qr-code).
+> **Note:** unlike the Source version of this guide, there is currently no browser/webserver-based method (`http://<ev3's local IP>/`) for registering a Python device — that page only ever shows the Source pipeline's secret, not Python's. Use "Show QR Code" (above) instead.
 
 ---
 
@@ -172,8 +158,6 @@ If you are stuck on "Connecting..." for a while, try selecting the device again 
 ### Some things to take note
 
 If you discover any bugs, please let us know in the forum.
-
-Note that the chapter and library selectors are non-functional for remote execution. We are still working on the user interface; please bear with us!
 
 ## Python language
 
