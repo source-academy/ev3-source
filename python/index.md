@@ -1,5 +1,6 @@
 ---
 title: EV3-Source Setup Guide (Python)
+layout: default
 ---
 
 # EV3-Source Setup Guide (Python)
@@ -70,14 +71,6 @@ SSH access to the robot still exists (**Enable SSH** / **Reset SSH Password** in
 
 > **⚠️ If you do need SSH and you're using a phone as a WiFi hotspot:** check that "AP isolation" / "Client isolation" is turned off in the hotspot's settings. Many phones enable this by default, which blocks devices on the same hotspot from reaching each other directly — including your laptop reaching the EV3 over SSH — even though both show as "connected" to the same network. There's no error message for this; SSH just times out, which is confusing without knowing to look here. This has no effect on pairing or running code.
 
-> **⚠️ Known limitation — `print()` produces no output.** `print()` statements in code running on the physical EV3 currently do not appear anywhere in the browser. This is a known gap in the underlying interpreter, not something wrong with your code or setup. Until it's fixed, use `ev3_speak(str(value))` instead — it will say the value out loud:
->
-> ```python
-> us = ev3_ultrasonicSensor()
-> distance = ev3_ultrasonicSensorDistance(us)
-> ev3_speak(str(distance))
-> ```
-
 ## 6. Examples
 
 ### Motor + sensor: drive until close to an obstacle
@@ -91,7 +84,7 @@ ev3_motorStart(motor)
 
 while True:
     distance = ev3_ultrasonicSensorDistance(us)
-    ev3_speak(str(distance))
+    print(distance)
     if distance < 20:
         break
     ev3_pause(500)
@@ -139,7 +132,6 @@ The full set of `ev3_*` functions works identically to [the Source-language EV3 
 |---|---|
 | The EV3 doesn't show up when pairing, even though it's connected to WiFi | This shouldn't be a network-connectivity issue — pairing goes through Source Academy's server, not a direct connection. Double check the secret was copied correctly, and that the EV3's WiFi actually has internet access (not just a local network with no internet) |
 | I can't reach the EV3 over SSH, even though it's on the same hotspot as my computer | AP isolation on your hotspot — see the note in [step 5](#5-writing-and-running-python) |
-| `print()` shows nothing | Expected right now — see the note in [step 5](#5-writing-and-running-python), use `ev3_speak()` instead |
 | The robot moved for a split second and then stopped, even though nothing told it to stop | You likely need `ev3_pause()` between start and stop — see the [timing note](#a-simple-line-follower) under Examples |
 
 ## Appendix: alternative flashing instructions

@@ -1,0 +1,14 @@
+---
+---
+
+@import "jekyll-theme-primer";
+
+// Responsive images: without this, a large source photo/screenshot (e.g. an
+// unresized phone photo) renders at its full native pixel size and overflows
+// or dwarfs the page's actual content width. This scales any image down to
+// fit its container while preserving aspect ratio, and never scales it up
+// past its own native size.
+.markdown-body img {
+  max-width: 100%;
+  height: auto;
+}
