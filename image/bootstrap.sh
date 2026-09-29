@@ -11,10 +11,13 @@ echo "robot ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/robot
 # stop sudo from doing a DNS lookup -- ensures executables can be run when network is down
 echo -e "Defaults\t!fqdn" >> /etc/sudoers
 
-# install sling.service (Source) and sling-python.service (Python), set permissions
-mv /usr/local/bin/sling.service /usr/local/bin/sling-python.service /usr/local/bin/panel.service /etc/systemd/system/
-chmod 644 /etc/systemd/system/sling.service /etc/systemd/system/sling-python.service /etc/systemd/system/panel.service
-systemctl enable sling.service sling-python.service panel.service
+# install sling.service (Source, prod) / sling-stg.service (Source, stg), sling-python.service
+# (Python, prod) / sling-python-stg.service (Python, stg), set permissions - see start-sling.sh's
+# own comment for why prod and stg each get their own persistent service instead of one script
+# picking a backend
+mv /usr/local/bin/sling.service /usr/local/bin/sling-stg.service /usr/local/bin/sling-python.service /usr/local/bin/sling-python-stg.service /usr/local/bin/panel.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/sling.service /etc/systemd/system/sling-stg.service /etc/systemd/system/sling-python.service /etc/systemd/system/sling-python-stg.service /etc/systemd/system/panel.service
+systemctl enable sling.service sling-stg.service sling-python.service sling-python-stg.service panel.service
 
 # set permissions to our executables
 chmod 755 /usr/local/bin/uuidtob62
@@ -53,6 +56,39 @@ sed -e '/^\s*;;$/{i \
         echo "$NEWPASS\n$NEWPASS" | passwd robot\
         reboot' \
     -e ':a;n;ba}' -i /etc/init.d/firstboot
+
+# Boot-reliability fixes found while testing on real hardware - see source-academy/ev3-source#21
+# for the full writeup of each one.
+
+# /dev/mmcblk0p1 (the boot/flash partition) is sometimes slow enough to enumerate on real MMC
+# hardware that the default systemd device-wait exceeds its timeout, which without `nofail`
+# drops the whole boot into emergency mode - even though the partition has already been read
+# once already, successfully, by the bootloader itself before systemd ever starts. `nofail` +
+# a shorter device timeout means a slow-to-appear card no longer blocks boot; a genuinely
+# missing partition would still fail the mount, just without holding up everything else.
+sed -i 's|\(/dev/mmcblk0p1 *\/boot/flash *vfat *defaults,errors=remount-ro,noatime\) *0 *2|\1,nofail,x-systemd.device-timeout=10 0 2|' /etc/fstab
+
+# connman-wait-online.service blocks network-online.target until an actual WiFi connection
+# exists - which can never happen on first boot, before any network is configured, creating a
+# hard deadlock. sling.service/sling-python.service already retry on their own
+# (Restart=always), so nothing actually needs to block boot on this.
+rm -f /etc/systemd/system/network-online.target.wants/connman-wait-online.service
+
+# ev3-usb@.service / lms2012-compat-usb-hid-gadget@.service (USB gadget mode for LEGO's own
+# official software, over a direct USB cable) both hard-depend (BindsTo=) on the UDC device
+# unit appearing, which is unreliable on this board and was blocking boot even though nothing
+# in this image otherwise needs it. Masked rather than left to time out.
+ln -sf /dev/null /etc/systemd/system/ev3-usb@.service
+ln -sf /dev/null /etc/systemd/system/lms2012-compat-usb-hid-gadget@.service
+
+# The two udev rules for this device still tag it TAG+="systemd" even with the services above
+# masked, which makes systemd track the device as its own unit with the same unreliable boot
+# timeout, independent of any specific service wanting it. Replaced with untagged versions
+# (see image/udev-rules.d/) - device alias (/sys/subsystem/udc/devices/$kernel) still gets
+# created either way, systemd just never waits on it.
+cp /usr/local/share/ev3-source-udev-rules/60-ev3.rules /lib/udev/rules.d/60-ev3.rules
+cp /usr/local/share/ev3-source-udev-rules/60-lms2012-compat-usb-hid-gadget.rules /lib/udev/rules.d/60-lms2012-compat-usb-hid-gadget.rules
+rm -rf /usr/local/share/ev3-source-udev-rules
 
 # make journald log to memory only
 cat <<EOF > /etc/systemd/journald.conf

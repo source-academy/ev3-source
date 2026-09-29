@@ -1,0 +1,6 @@
+# This file is part of the lms2012-compat package
+
+# TAG+="systemd" intentionally removed (see ev3-source#21) - same reason as 60-ev3.rules: made
+# systemd wait on the UDC device unit unreliably.
+SUBSYSTEM=="udc", ACTION=="add", \
+    ENV{SYSTEMD_ALIAS}="/sys/subsystem/udc/devices/$kernel"

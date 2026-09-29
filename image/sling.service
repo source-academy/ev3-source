@@ -10,7 +10,7 @@ TimeoutStartSec=0
 Restart=always
 RestartSec=2
 User=robot
-ExecStart=/usr/local/bin/start-sling.sh
+ExecStart=/usr/local/bin/start-sling.sh https://api.sourceacademy.nus.edu.sg
 
 [Install]
 WantedBy=multi-user.target
