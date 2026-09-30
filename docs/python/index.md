@@ -206,9 +206,6 @@ left = ev3_motorA()
 right = ev3_motorB()
 sensor = ev3_colorSensor()
 
-ev3_motorStart(left)
-ev3_motorStart(right)
-
 while True:
     light = ev3_reflectedLightIntensity(sensor)
     error = light - TARGET
@@ -216,11 +213,15 @@ while True:
 
     ev3_motorSetSpeed(left, BASE_SPEED + turn)
     ev3_motorSetSpeed(right, BASE_SPEED - turn)
+    ev3_motorStart(left)
+    ev3_motorStart(right)
 
     ev3_pause(10)
 ```
 
 > **Note on timing:** `ev3_motorStart`/`ev3_motorStop` are both non-blocking — they just tell the motor to start or stop and return immediately. A program that calls `ev3_motorStart` immediately followed by `ev3_motorStop`, with nothing in between, will not visibly move the motor at all: on-device code runs as fast as the interpreter can execute it, so "stop" arrives before the motor has had any real time to move. Use `ev3_pause(ms)`, or a loop with real work in it like the example above, to give the motor actual wall-clock time to move.
+>
+> **Note on changing speed while running:** confirmed on real hardware - calling `ev3_motorSetSpeed` on a motor that's already running via `ev3_motorStart` does *not* reliably take effect on its own. If you're continuously adjusting speed in a loop (like the line follower above), call `ev3_motorStart` again every time after `ev3_motorSetSpeed`, not just once before the loop - that's why it's inside the loop here rather than before it. Without this, the printed sensor/error values will correctly update, but the motor's actual speed won't change at all, which looks exactly like a sensor or logic bug until you notice the motor was never told to pick up the new speed.
 
 ### Tips
 
