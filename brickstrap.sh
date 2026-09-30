@@ -201,9 +201,25 @@ function brickstrap_create_image()
     # orphan_file, compat bit 12), which systemd-fsck-root.service treats as fatal and drops the
     # whole boot into emergency mode. Explicitly excluding the newer features keeps the
     # filesystem on a feature set the image's own e2fsck actually understands. Harmless on an
-    # older host (e.g. this project's current ubuntu-20.04 CI runner) whose mke2fs never enabled
-    # these features anyway - excluding an already-absent feature is a no-op.
-    ROOTFS_MKE2FS_FEATURES="^orphan_file,^metadata_csum_seed,^fast_commit,^sparse_super2,^stable_inodes"
+    # older host whose mke2fs never enabled these features anyway - excluding an already-absent
+    # feature is normally a no-op.
+    #
+    # That assumption broke moving to a newer CI runner image: its mke2fs (1.46.5) is old enough
+    # to not recognize one of these five names at all (added in a later e2fsprogs release), and
+    # unlike "silently no-op on an absent feature", an unrecognized name makes mke2fs reject the
+    # entire -O list as invalid, aborting the whole image build. Rather than hardcode which name(s)
+    # are safe for whichever e2fsprogs happens to be installed, detect it directly: keep only the
+    # names this host's own mke2fs actually accepts negating, on a real scratch filesystem via the
+    # same -O parser guestfish's appliance will use (built from this same host's packages).
+    ROOTFS_MKE2FS_FEATURES=""
+    for feat in orphan_file metadata_csum_seed fast_commit sparse_super2 stable_inodes; do
+        feat_test_img="$(mktemp)"
+        truncate -s 16M "$feat_test_img"
+        if mke2fs -F -q -O "^$feat" "$feat_test_img" >/dev/null 2>&1; then
+            ROOTFS_MKE2FS_FEATURES="${ROOTFS_MKE2FS_FEATURES:+$ROOTFS_MKE2FS_FEATURES,}^$feat"
+        fi
+        rm -f "$feat_test_img"
+    done
 
     guestfish -N "$BRICKSTRAP_IMAGE_FILE_NAME"=disk:$BRICKSTRAP_IMAGE_FILE_SIZE -- \
         part-init /dev/sda mbr : \
