@@ -12,7 +12,7 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       - uses: satackey/action-docker-layer-caching@v0.0.8
@@ -47,7 +47,7 @@ jobs:
         run: sudo chmod 755 /boot/vmlinuz*
       - name: build image
         run: ./build_image.sh
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'workflow_dispatch' }}
         with:
           name: image
