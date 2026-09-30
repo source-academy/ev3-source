@@ -7,6 +7,7 @@ cd "$SCRIPT_DIR"
 
 cd image
 cp ../build-ev3/{sling,sinter_host} .
+cp ../pynter/devices/ev3/build-ev3/pynter-ev3 .
 mkdir -p executables
 cp ../build-ev3/executables/uuidtob62 executables
 

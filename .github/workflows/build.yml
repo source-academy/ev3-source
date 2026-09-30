@@ -16,11 +16,15 @@ jobs:
         with:
           submodules: recursive
       - uses: satackey/action-docker-layer-caching@v0.0.8
-      - name: install brickstrap
+      - name: install brickstrap dependencies
         run: |
           sudo apt-get update
           sudo apt-get install --yes --no-install-recommends libguestfs-tools qemu-user-static binfmt-support
-          curl -LO https://raw.githubusercontent.com/ev3dev/brickstrap/master/src/brickstrap.sh
+          # brickstrap.sh itself is vendored at the repo root (not curl-fetched from upstream
+          # ev3dev/brickstrap here) so the ext4-feature fix below (see the file's own comment,
+          # source-academy/ev3-source#21) always applies regardless of what upstream does next -
+          # a plain re-fetch would silently drop it.
+          chmod 755 ./brickstrap.sh
       - name: build sling and sinter
         run: ./build_sling.sh
       - name: build qrcode generator
@@ -29,13 +33,16 @@ jobs:
         run: ./build_control_panel.sh
       - name: build uuidtob62
         run: ./build_uuidtob62.sh
+      - name: build pynter
+        run: ./build_pynter.sh
       - name: check the outputs
         run: |
           file build-ev3/sling \
                build-ev3/sinter_host \
                build-ev3/executables/show_qrcode \
                build-ev3/executables/service_control \
-               build-ev3/executables/uuidtob62
+               build-ev3/executables/uuidtob62 \
+               pynter/devices/ev3/build-ev3/pynter-ev3
       - name: make vmlinuz readable
         run: sudo chmod 755 /boot/vmlinuz*
       - name: build image

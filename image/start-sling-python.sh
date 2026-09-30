@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Python's counterpart to start-sling.sh - runs entirely independently (own sling process, own
+# SLING_DIR, own secret/device identity registered separately against the backend) so it can sit
+# alongside the existing Source pipeline without touching it. See start-sling.sh's own comments for
+# what each step below actually does; this only differs in which interpreter binary sling execs and
+# which on-disk directory (hence which secret/device identity) it uses.
+
 fatal_error() {
   >&2 echo $1
   exit 1
@@ -10,15 +16,15 @@ fatal_error() {
 # other. There's no single "right" backend to hardcode: whichever frontend a user is testing from
 # expects the device connected to *that* backend's broker specifically. So instead of picking one,
 # this script is parametrized by backend host and run as two independent, concurrently-running
-# services (see sling.service / sling-stg.service) - the device ends up genuinely live on both at
-# once.
+# services (see sling-python.service / sling-python-stg.service) - the device ends up genuinely
+# live on both at once.
 BACKEND_HOST="$1"
 if [ -z "$BACKEND_HOST" ]; then
-  fatal_error "Usage: start-sling.sh <backend-host>"
+  fatal_error "Usage: start-sling-python.sh <backend-host>"
 fi
 
-SLING_DIR="/var/lib/sling"
-export SINTER_HOST_PATH="/usr/local/bin/sinter_host"
+SLING_DIR="/var/lib/sling-python"
+export SINTER_HOST_PATH="/usr/local/bin/pynter-ev3"
 export SLING_SECRET_FILE="$SLING_DIR/secret_b62"
 export SLING_UUID_FILE="$SLING_DIR/secret"
 
@@ -31,13 +37,13 @@ chmod 644 "$SLING_SECRET_FILE"
 
 SLING_SECRET=$(cat "$SLING_SECRET_FILE")
 
-# Each backend issues its own cert/key pair (and would hand back its own program.svm state) for
+# Each backend issues its own cert/key pair (and would hand back its own program.pvm state) for
 # this device's secret, so each backend gets its own subdirectory here rather than sharing
 # SLING_DIR's files directly - otherwise the prod and stg instances running concurrently would
 # clobber each other's credentials and in-flight program.
 CREDS_DIR="$SLING_DIR/$(echo "$BACKEND_HOST" | sed -E 's|https?://||; s|[^A-Za-z0-9]+|-|g')"
 mkdir -p "$CREDS_DIR"
-export SLING_PROGRAM_PATH="$CREDS_DIR/program.svm"
+export SLING_PROGRAM_PATH="$CREDS_DIR/program.pvm"
 export SLING_KEY="$CREDS_DIR/key.pem"
 export SLING_CERT="$CREDS_DIR/cert.pem"
 

@@ -16,4 +16,5 @@ RUN sudo bash -c "apt-get update && \
                   apt-get update && \
                   apt-get install --yes --no-install-recommends -t stretch-backports-sloppy libarchive13 && \
                   apt-get install --yes --no-install-recommends -t stretch-backports cmake && \
+                  apt-get install --yes libssl1.1:armel && \
                   apt-get install --yes --no-install-recommends libssl-dev:armel"

@@ -1,5 +1,5 @@
 [Unit]
-Description=Sling
+Description=Sling (stg)
 After=network-online.target
 Wants=network-online.target
 StartLimitIntervalSec=0
@@ -10,7 +10,7 @@ TimeoutStartSec=0
 Restart=always
 RestartSec=2
 User=robot
-ExecStart=/usr/local/bin/start-sling.sh https://api.sourceacademy.nus.edu.sg
+ExecStart=/usr/local/bin/start-sling.sh https://api.stg.sourceacademy.nus.edu.sg
 
 [Install]
 WantedBy=multi-user.target
