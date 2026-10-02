@@ -209,12 +209,16 @@ If you discover any bugs, please let us know in the forum.
 
 Note that the "Pause" button, as well as the REPL, chapter and library selectors are non-functional. We are still working on the user interface; please bear with us!
 
-There are some differences between the full Python §3 and the Python §3 on the device:
+There are some differences between the full Source §3 and the Source §3 on the device:
 
 * These functions are not (yet) supported:
-  * `input`
+  * `list_to_string`
+  * `parse_int`
+  * `get_time`
+  * `prompt`
+  * `stringify`
 * Numbers are single-precision floating points. This means that `16777216 + 1 === 16777216`.
-* `time_time` deliberately does not return real wall-clock/epoch time, even on devices that have one (native, EV3) — it returns seconds since approximately when the program started, as a monotonically increasing value
+
 * Avoid using large arrays.
 
   Note that sparse arrays are not supported, that is, assigning to a large index in the array (e.g. `a[500]`) will create an array of 501 elements, the first 500 of which are `undefined`, and consume that much space.
@@ -233,31 +237,32 @@ For macOS users, and connect using USB, you might not see 'CDC Composite Gadget'
 
 #### Example 1
 
-```
-motorA = ev3_motorA()
-motorB = ev3_motorB()
+```js
+const motorA = ev3_motorA();
+const motorB = ev3_motorB();
 
-print("A connected" if ev3_connected(motorA) else "A not connected")
-print("B connected" if ev3_connected(motorB) ? else "B not connected")
+display(ev3_connected(motorA) ? "A connected" : "A not connected");
+display(ev3_connected(motorB) ? "B connected" : "B not connected");
 
-ev3_runToRelativePosition(motorA, 3000, 100)
-ev3_runToRelativePosition(motorB, -2000, 100)
-ev3_pause(1000)
+ev3_runToRelativePosition(motorA, 3000, 100);
+ev3_runToRelativePosition(motorB, -2000, 100);
+ev3_pause(1000);
 ```
 
 #### Example 2
 
-```
-color = ev3_colorSensor()
-if ev3_reflectedLightIntensity(color) > 20:
-  # Do something
-else:
-  # Do something else
+```js
+const color = ev3_colorSensor();
+if (ev3_reflectedLightIntensity(color) > 20) {
+  // Do something
+} else {
+  // Do something else
+}
 ```
 
-## Python language
+## Source language
 
-The language for this mission is Python §3 (including the llist, stream and list library), plus the special [EV3 library][ev3-docs].
+The language for this mission is Source §3 (including the list, streams and arrays library), plus the special [EV3 library][ev3-docs].
 
 [You can view the documentation for the EV3 library here.][ev3-docs]
 
@@ -381,5 +386,5 @@ For macOS users, we recommend [Etcher](https://etcher.io/). Otherwise, refer to 
 
 Adapted from [the ev3dev website](https://www.ev3dev.org/docs/tutorials/writing-sd-card-image-linux-command-line/).
 
-[latest-img]: https://github.com/source-academy/ev3-source/releases/download/release-v0.3.0/ev3-source-release-v0.3.0.img.zip
+[latest-img]: https://github.com/source-academy/ev3-source/releases/download/release-v0.2.0/ev3-source-release-v0.2.0.img.zip
 [ev3-docs]: https://docs.sourceacademy.org/EV3/
