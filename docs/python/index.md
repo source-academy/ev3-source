@@ -157,15 +157,19 @@ Click on the new entry that is created. Once you see "Connected to _\<your_devic
 
 If you are stuck on "Connecting..." for a while, try selecting the device again to attempt a re-connection.
 
-### Some things to take note
+## Python
 
-If you discover any bugs, please let us know in the forum.
+The language for this mission is a variant of Python §3, plus the special [EV3 library][ev3-docs]. The library documentation is language neutral: every `ev3_*` function has the same name, arguments and behaviour in Python and in Source.
 
-## Python language
+Note that the "Pause" button, as well as the REPL, are not available.
 
-The language for this mission is Python, plus the special [EV3 library][ev3-docs] — every `ev3_*` function has the same name, arguments, and behaviour as its Source counterpart, so the same library reference applies to both.
+There are some differences between full Python §3 and Python §3 on EV3:
 
-Part of the fun is learning how to troubleshoot. If you have difficulties, start by Googling your problems. For debugging, use `print()` in your programs the same way you would in any other Python code — the output will appear in the Playground.
+* `input()` is not supported. It compiles, but faults at runtime if called.
+* Numbers are single-precision (32-bit) floating points, including the real and imaginary parts of complex numbers. In particular, integers are only exact up to 2^24 = 16777216: `16777216 + 1 == 16777216`.
+* `time_time()` deliberately does **not** return real wall-clock/epoch time, even though the EV3 has a clock. It returns the seconds elapsed since approximately when the program started, as a monotonically increasing value. (An epoch timestamp has only about 128 seconds of resolution in a 32-bit float, and the EV3 clock resets whenever the battery is disconnected.) Values are not comparable across separate program runs; only the difference between two calls within the same run is meaningful.
+* `complex("3+4j")`-style construction from a single string is not supported.
+* Avoid using large lists. Treat them like C arrays: list subscript assignment never grows a list, and an out-of-range index raises `IndexError`.
 
 ### Examples
 
@@ -229,6 +233,12 @@ while True:
 * Multiple users can connect to the same device at the same time. If one user clicks "Run", all users will see the device run and the device's output.
 * You can use this feature with the collaborative editing feature so that all members of your Studio can work on the program together. You can also use it with the Google Drive integration to save different programs that you write.
 * On a freshly flashed card's very first boot, WiFi sometimes doesn't connect on its own even after you've selected your network. If this happens, try toggling WiFi off and back on (it's sometimes off by default) in the Wi-Fi menu entry, or removing and re-inserting the card and powering back on. This seems to only affect the very first boot of a fresh card - once it's connected once, subsequent boots connect normally.
+
+### Getting help
+
+If you discover any bugs, please let us know in the course forum.
+
+Part of the fun is learning how to troubleshoot. If you have difficulties, start by checking with your favorite AI chatbot. For debugging, use `print()` in your programs the same way you would in any other Python code — the output will appear in the Playground.
 
 #### Troubleshooting
 
