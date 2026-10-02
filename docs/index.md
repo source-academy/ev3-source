@@ -238,7 +238,7 @@ motorA = ev3_motorA()
 motorB = ev3_motorB()
 
 print("A connected" if ev3_connected(motorA) else "A not connected")
-print("B connected" if ev3_connected(motorB) ? else "B not connected")
+print("B connected" if ev3_connected(motorB) else "B not connected")
 
 ev3_runToRelativePosition(motorA, 3000, 100)
 ev3_runToRelativePosition(motorB, -2000, 100)
