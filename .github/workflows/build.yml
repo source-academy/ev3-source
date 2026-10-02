@@ -10,12 +10,17 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
+    env:
+      # BuildKit mounts each RUN step's rootfs with nosuid, which breaks `sudo` inside
+      # ev3dev-service-control's Dockerfile (still needed on the newer Docker Engine that ships
+      # with this runner image, even though that Dockerfile itself is unchanged). The legacy
+      # builder doesn't impose this restriction.
+      DOCKER_BUILDKIT: "0"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: satackey/action-docker-layer-caching@v0.0.8
       - name: install brickstrap dependencies
         run: |
           sudo apt-get update
@@ -47,7 +52,7 @@ jobs:
         run: sudo chmod 755 /boot/vmlinuz*
       - name: build image
         run: ./build_image.sh
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'workflow_dispatch' }}
         with:
           name: image
