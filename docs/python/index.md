@@ -293,5 +293,5 @@ If you are on Linux or macOS, you should have an SSH client already installed. W
 
 See [the main guide's appendix](../#alternative-flashing-instructions) — the flashing process is identical regardless of language.
 
-[latest-img]: https://github.com/source-academy/ev3-source/releases/download/release-v0.3.1/ev3-source-release-v0.3.1.img.zip
+[latest-img]: https://github.com/source-academy/ev3-source/releases/latest
 [ev3-docs]: https://docs.sourceacademy.org/EV3/
