@@ -27,6 +27,13 @@ sed -i \
   Dockerfile
 docker build -t "$IMAGE_NAME" .
 
+# Vendored fix for source-academy/ev3-source#31 ("Invalidate Bot Token" never reset the Python
+# pipeline's secret) - applied here rather than waiting on RichDom2185/ev3dev-service-control#4 to
+# be reviewed/merged upstream. Drop this once that PR lands and the submodule pointer is bumped
+# past it; `patch` fails loudly (set -e) if it's already included upstream, which is the intended
+# signal to remove this step rather than silently double-apply or skip it.
+patch -p1 < "$SCRIPT_DIR/patches/ev3dev-service-control-invalidate-bot-token-python.patch"
+
 cd "$SCRIPT_DIR"
 mkdir -p build-ev3/executables
 docker run --rm  -v "$(realpath "$SCRIPT_DIR")":/src -w /src -u 0:0 "$IMAGE_NAME" -o build-ev3/executables/service_control "$REPO_DIR/main.vala"
