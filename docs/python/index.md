@@ -147,7 +147,17 @@ Then, on the EV3 device:
 
 After 10 seconds, the QR code will automatically disappear. If you need more time, simply select "Show QR Code" again. After scanning the code on your computer/phone, click the add button. You have successfully linked the EV3 to your account!
 
-> **Note:** unlike the Source version of this guide, there is currently no browser/webserver-based method (`http://<ev3's local IP>/`) for registering a Python device — that page only ever shows the Source pipeline's secret, not Python's. Use "Show QR Code" (above) instead.
+> #### Method 2: Accessing the EV3 from a browser
+>
+> > Webserver is disabled by default. In order to do this, make sure you toggle "Enable Webserver" under [Source Academy Settings](#source-academy-settings) located on the EV3 file browser.
+>
+> Using a phone or computer, open `http://<ev3's local IP>/` in your browser, where `<ev3's local IP>` is the EV3's local IP address, shown on the top left-hand corner of the EV3's screen. You should get a page similar to above, showing your Python device's secret (not the Source pipeline's).
+>
+> Next, choose one of the following:
+>
+> **Method 2a (fastest):** If you're already logged in to Source Academy, click the QR code at the page. This will automatically pop up a dialog for you to pair the device on Source Academy. Give the device a name and add it to your account using similar steps as above. If you are not logged in, we strongly recommend you to log in and use this method.
+>
+> **Method 2b (adding manually):** Copy the device secret at the top of the page, then go to the Source Academy Playground and follow similar steps as above to add the device to your account, manually pasting in the secret.
 
 ---
 
@@ -229,7 +239,7 @@ while True:
 
 ### Tips
 
-* At any time, if you feel that the device secret has been compromised, you can invalidate and generate a new one using "Invalidate Bot Token" under [Source Academy Settings](#source-academy-settings). Afterwards, everyone will need to re-register their device on Source Academy using the new secret.
+* At any time, if you feel that the device secret has been compromised, you can invalidate and generate a new one using "Invalidate Bot Token" under [Source Academy Settings](#source-academy-settings). Afterwards, everyone will need to re-register their device on Source Academy using the new secret. **Note:** this currently only resets the Source pipeline's secret, not Python's — it does not work for Python devices yet ([ev3-source#31](https://github.com/source-academy/ev3-source/issues/31)).
 * Multiple users can connect to the same device at the same time. If one user clicks "Run", all users will see the device run and the device's output.
 * You can use this feature with the collaborative editing feature so that all members of your Studio can work on the program together. You can also use it with the Google Drive integration to save different programs that you write.
 * On a freshly flashed card's very first boot, WiFi sometimes doesn't connect on its own even after you've selected your network. If this happens, try toggling WiFi off and back on (it's sometimes off by default) in the Wi-Fi menu entry, or removing and re-inserting the card and powering back on. This seems to only affect the very first boot of a fresh card - once it's connected once, subsequent boots connect normally.
@@ -254,7 +264,7 @@ You can navigate the UI by using the up and down arrow keys on the EV3, and sele
 
 |                        Option                        | Description                                                                                                                                                                                                        |
 |:----------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ![Invalidate Bot Token](../images/ev3/sa_settings1.png) | Invalidates the device secret and generates a new one. Note that you still need to run the "Show QR Code" app separately in order to regenerate the QR code image.                                                 |
+| ![Invalidate Bot Token](../images/ev3/sa_settings1.png) | Invalidates the device secret and generates a new one. Note that you still need to run the "Show QR Code" app separately in order to regenerate the QR code image. **Currently only resets the Source pipeline's secret, not Python's.** |
 |      ![Enable SSH](../images/ev3/sa_settings2.png)      | Toggles SSH on/off. Off by default. Note that the UI may seem to freeze for a few seconds after pressing this button. This is normal; please do not spam the button or press other buttons while it is processing. |
 |  ![Reset SSH Password](../images/ev3/sa_settings3.png)  | Generates a new password for SSH login.                                                                                                                                                                            |
 |   ![Enable Webserver](../images/ev3/sa_settings4.png)   | Toggles whether to display the secret in the web server located at the EV3's IP address.                                                                                                                           |
